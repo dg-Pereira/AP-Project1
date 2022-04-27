@@ -12,7 +12,6 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import BatchNormalization, Conv2D, MaxPooling2D
 from tensorflow.keras.layers import Activation, Flatten, Dropout, Dense
 
-#validation error was jumping a lot, so used lower learning rate
 INIT_LR = 0.001
 NUM_EPOCHS = 250
 BATCH_SIZE = 32
