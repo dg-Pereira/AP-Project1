@@ -37,7 +37,20 @@ print(test_classes.shape)
 
 def create_model():
     m = Sequential()
+    
     m.add(Conv2D(32, (3, 3), padding="same", input_shape=(64, 64, 3)))
+    m.add(Activation('relu'))
+    m.add(BatchNormalization())
+
+    m.add(MaxPooling2D(pool_size=(2, 2)))
+
+    m.add(Conv2D(32, (3, 3), padding='same'))
+    m.add(Activation('relu'))
+    m.add(BatchNormalization())
+    
+    m.add(MaxPooling2D(pool_size=(2, 2)))
+    
+    m.add(Conv2D(64, (3, 3), padding="same", input_shape=(64, 64, 3)))
     m.add(Activation('relu'))
     m.add(BatchNormalization())
 
@@ -50,12 +63,9 @@ def create_model():
     m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Flatten())
-    m.add(Dense(512))
-    m.add(Activation('relu'))
-    m.add(BatchNormalization())
-
     m.add(Dense(256))
     m.add(Activation('relu'))
+
     m.add(BatchNormalization())
 
     m.add(Dense(128))
