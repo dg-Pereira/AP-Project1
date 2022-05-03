@@ -21,7 +21,7 @@ Sequential = tf.keras.models.Sequential
 
 INIT_LR = 0.001
 NUM_EPOCHS = 250
-BATCH_SIZE = 48
+BATCH_SIZE = 16
 
 all_data = load_data()
 
@@ -95,7 +95,7 @@ def create_model_1():
 
 
 def do_part_1():
-    opt = tf.keras.optimizers.Adam(lr=INIT_LR)
+    opt = tf.keras.optimizers.Adam(lr=INIT_LR, decay=INIT_LR/NUM_EPOCHS)
     model = create_model_1()
     model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["categorical_accuracy"])
 
@@ -152,7 +152,7 @@ def create_model_2():
 
     
 def do_part_2():
-    opt = tf.keras.optimizers.Adam(lr=INIT_LR)
+    opt = tf.keras.optimizers.Adam(lr=INIT_LR, decay=INIT_LR/NUM_EPOCHS)
     model = create_model_1()
     model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["binary_accuracy"])
 
@@ -160,4 +160,4 @@ def do_part_2():
                         epochs=NUM_EPOCHS)
     model.summary()
     
-do_part_2()
+do_part_1()
