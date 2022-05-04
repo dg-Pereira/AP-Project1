@@ -9,6 +9,8 @@ import numpy as np
 
 from tp1_utils import load_data
 
+import keras
+
 # this is needed because of pycharm acting up
 BatchNormalization = tf.keras.layers.BatchNormalization
 Conv2D = tf.keras.layers.Conv2D
@@ -18,6 +20,7 @@ Flatten = tf.keras.layers.Flatten
 Dropout = tf.keras.layers.Dropout
 Dense = tf.keras.layers.Dense
 Sequential = tf.keras.models.Sequential
+InverseTimeDecay = tf.keras.optimizers.schedules.InverseTimeDecay
 
 INIT_LR = 0.001
 NUM_EPOCHS = 250
@@ -95,7 +98,8 @@ def create_model_1():
 
 
 def do_part_1():
-    opt = tf.keras.optimizers.Adam(lr=INIT_LR, decay=INIT_LR/NUM_EPOCHS)
+    learning_rate_fn = InverseTimeDecay(INIT_LR, 1.0, INIT_LR / NUM_EPOCHS)
+    opt = tf.keras.optimizers.Adam(learning_rate=learning_rate_fn)
     model = create_model_1()
     model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["categorical_accuracy"])
 
@@ -152,7 +156,8 @@ def create_model_2():
 
     
 def do_part_2():
-    opt = tf.keras.optimizers.Adam(lr=INIT_LR, decay=INIT_LR/NUM_EPOCHS)
+    learning_rate_fn = InverseTimeDecay(INIT_LR, 1.0, INIT_LR/NUM_EPOCHS)
+    opt = tf.keras.optimizers.Adam(learning_rate=learning_rate_fn)
     model = create_model_1()
     model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["binary_accuracy"])
 
