@@ -25,7 +25,7 @@ np.set_printoptions(threshold=np.inf)
 
 INIT_LR = 0.001
 NUM_EPOCHS = 250
-BATCH_SIZE = 16
+BATCH_SIZE = 12
 
 all_data = load_data()
 
@@ -41,9 +41,9 @@ train_labels = all_data['train_labels']
 train_labels, valid_labels = np.split(train_labels, [len(train_labels)-500])
 test_labels = all_data['test_labels']
 
-train_masks = all_data['train_masks']
+train_masks = all_data['train_masks'][:, :, :, 0].reshape((4000, 64*64))
 train_masks, valid_masks = np.split(train_masks, [len(train_masks)-500])
-test_masks = all_data['test_masks']
+test_masks = all_data['test_masks'][:, :, :, 0].reshape((500, 64*64))
 
 
 # data is already normalized
@@ -55,42 +55,42 @@ def create_model_1():
     m = Sequential()
 
     m.add(Conv2D(16, (3, 3), padding='same', input_shape=(64, 64, 3)))
-    m.add(Activation('relu'))
+    m.add(LeakyReLU(alpha=0.05))
     m.add(BatchNormalization())
     m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Conv2D(16, (3, 3), padding='same'))
-    m.add(Activation('relu'))
+    m.add(LeakyReLU(alpha=0.05))
     m.add(BatchNormalization())
     m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Conv2D(32, (3, 3), padding='same'))
-    m.add(Activation('relu'))
+    m.add(LeakyReLU(alpha=0.05))
     m.add(BatchNormalization())
     m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Conv2D(32, (3, 3), padding='same'))
-    m.add(Activation('relu'))
+    m.add(LeakyReLU(alpha=0.05))
     m.add(BatchNormalization())
     m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Conv2D(64, (3, 3), padding='same'))
-    m.add(Activation('relu'))
+    m.add(LeakyReLU(alpha=0.05))
     m.add(BatchNormalization())
     m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Conv2D(96, (3, 3), padding='same'))
-    m.add(Activation('relu'))
+    m.add(LeakyReLU(alpha=0.05))
     m.add(BatchNormalization())
     m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Flatten())
     m.add(Dense(256))
-    m.add(Activation('relu'))
+    m.add(LeakyReLU(alpha=0.05))
     m.add(BatchNormalization())
 
     m.add(Dense(128))
-    m.add(Activation('relu'))
+    m.add(LeakyReLU(alpha=0.05))
     m.add(BatchNormalization())
 
     m.add(Dense(10))
@@ -162,9 +162,47 @@ def do_part_2():
     model = create_model_2()
     model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["binary_accuracy"])
 
+    
     history = model.fit(train_X, train_labels, validation_data=(valid_X, valid_labels), batch_size=BATCH_SIZE,
                         epochs=NUM_EPOCHS)
     model.summary()
-
     
-do_part_2()
+
+def create_model_3():
+    m = Sequential()
+
+    m.add(Conv2D(16, (3, 3), padding='same', input_shape=(64, 64, 3)))
+    m.add(Activation('relu'))
+    m.add(BatchNormalization())
+    m.add(MaxPooling2D(pool_size=(2, 2)))
+    
+    m.add(Conv2D(32, (3, 3), padding='same'))
+    m.add(Activation('relu'))
+    m.add(BatchNormalization())
+    m.add(MaxPooling2D(pool_size=(2, 2)))
+    
+    m.add(Conv2D(64, (3, 3), padding='same'))
+    m.add(Activation('relu'))
+    m.add(BatchNormalization())
+    m.add(MaxPooling2D(pool_size=(2, 2)))
+    
+    m.add(Flatten())
+
+    m.add(Dense(64*64))
+    m.add(Activation("sigmoid"))
+    return m
+
+
+def do_part_3():
+    learning_rate_fn = InverseTimeDecay(INIT_LR, 1.0, INIT_LR/NUM_EPOCHS)
+    opt = tf.keras.optimizers.Adam(learning_rate=learning_rate_fn)
+    model = create_model_3()
+    model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["binary_accuracy"])    
+    
+    print(train_masks.shape)
+    print(valid_masks.shape)
+    history = model.fit(train_X, train_masks, validation_data=(valid_X, valid_masks), batch_size=BATCH_SIZE, epochs=NUM_EPOCHS)
+    
+    model.summary()
+
+do_part_3()
