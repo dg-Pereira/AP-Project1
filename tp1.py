@@ -9,8 +9,6 @@ import numpy as np
 
 from tp1_utils import load_data
 
-import keras
-
 # this is needed because of pycharm acting up
 BatchNormalization = tf.keras.layers.BatchNormalization
 Conv2D = tf.keras.layers.Conv2D
@@ -21,6 +19,9 @@ Dropout = tf.keras.layers.Dropout
 Dense = tf.keras.layers.Dense
 Sequential = tf.keras.models.Sequential
 InverseTimeDecay = tf.keras.optimizers.schedules.InverseTimeDecay
+LeakyReLU = tf.keras.layers.LeakyReLU
+
+np.set_printoptions(threshold=np.inf)
 
 INIT_LR = 0.001
 NUM_EPOCHS = 250
@@ -32,10 +33,6 @@ train_X = all_data['train_X']
 train_X, valid_X = np.split(train_X, [len(train_X)-500])
 test_X = all_data['test_X']
 
-train_masks = all_data['train_masks']
-train_masks, valid_masks = np.split(train_masks, [len(train_masks)-500])
-test_masks = all_data['test_masks']
-
 train_classes = all_data['train_classes']
 train_classes, valid_classes = np.split(train_classes, [len(train_classes)-500])
 test_classes = all_data['test_classes']
@@ -43,6 +40,10 @@ test_classes = all_data['test_classes']
 train_labels = all_data['train_labels']
 train_labels, valid_labels = np.split(train_labels, [len(train_labels)-500])
 test_labels = all_data['test_labels']
+
+train_masks = all_data['train_masks']
+train_masks, valid_masks = np.split(train_masks, [len(train_masks)-500])
+test_masks = all_data['test_masks']
 
 
 # data is already normalized
@@ -158,11 +159,12 @@ def create_model_2():
 def do_part_2():
     learning_rate_fn = InverseTimeDecay(INIT_LR, 1.0, INIT_LR/NUM_EPOCHS)
     opt = tf.keras.optimizers.Adam(learning_rate=learning_rate_fn)
-    model = create_model_1()
+    model = create_model_2()
     model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["binary_accuracy"])
 
     history = model.fit(train_X, train_labels, validation_data=(valid_X, valid_labels), batch_size=BATCH_SIZE,
                         epochs=NUM_EPOCHS)
     model.summary()
+
     
-do_part_1()
+do_part_2()
