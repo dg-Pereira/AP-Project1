@@ -6,8 +6,9 @@ Aprendizagem Profunda, TP1
 
 import tensorflow as tf
 import numpy as np
+from keras import Input
 
-from tp1_utils import load_data
+from tp1_utils import load_data, overlay_masks
 
 # this is needed because of pycharm acting up
 BatchNormalization = tf.keras.layers.BatchNormalization
@@ -20,11 +21,14 @@ Dense = tf.keras.layers.Dense
 Sequential = tf.keras.models.Sequential
 InverseTimeDecay = tf.keras.optimizers.schedules.InverseTimeDecay
 LeakyReLU = tf.keras.layers.LeakyReLU
+UpSampling2D = tf.keras.layers.UpSampling2D
+Reshape = tf.keras.layers.Reshape
+Model = tf.keras.models.Model
 
 np.set_printoptions(threshold=np.inf)
 
 INIT_LR = 0.001
-NUM_EPOCHS = 250
+NUM_EPOCHS = 20
 BATCH_SIZE = 12
 
 all_data = load_data()
@@ -168,14 +172,14 @@ def do_part_2():
     model.summary()
     
 
-def create_model_3():
+def create_model_3_v1():
     m = Sequential()
 
     m.add(Conv2D(16, (3, 3), padding='same', input_shape=(64, 64, 3)))
     m.add(Activation('relu'))
     m.add(BatchNormalization())
     m.add(MaxPooling2D(pool_size=(2, 2)))
-    
+
     m.add(Conv2D(32, (3, 3), padding='same'))
     m.add(Activation('relu'))
     m.add(BatchNormalization())
@@ -193,16 +197,82 @@ def create_model_3():
     return m
 
 
-def do_part_3():
+def do_part_3_v1():
     learning_rate_fn = InverseTimeDecay(INIT_LR, 1.0, INIT_LR/NUM_EPOCHS)
     opt = tf.keras.optimizers.Adam(learning_rate=learning_rate_fn)
-    model = create_model_3()
-    model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["binary_accuracy"])    
-    
-    print(train_masks.shape)
-    print(valid_masks.shape)
+    model = create_model_3_v1()
+    model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["binary_accuracy"])
+
     history = model.fit(train_X, train_masks, validation_data=(valid_X, valid_masks), batch_size=BATCH_SIZE, epochs=NUM_EPOCHS)
-    
+
     model.summary()
 
-do_part_3()
+    predicts = model.predict(test_X).reshape(500, 64, 64, 1)
+    overlay_masks('test_overlay.png', test_X, predicts)
+
+
+def create_model_3_v2():
+    inputs = Input(shape=(64, 64, 3), name='inputs')
+    layer = Conv2D(32, (3, 3), padding="same", input_shape=(64, 64, 3))(inputs)
+    print("1: ", end='')
+    print(layer.shape)
+    layer = Activation("relu")(layer)
+    layer = BatchNormalization(axis=-1)(layer)
+    print("2: ", end='')
+    print(layer.shape)
+    layer = MaxPooling2D(pool_size=(2, 2))(layer)
+    print("3: ", end='')
+    print(layer.shape)
+    layer = Conv2D(8, (3, 3), padding="same")(layer)
+    print("4: ", end='')
+    print(layer.shape)
+    layer = Activation("relu")(layer)
+    layer = BatchNormalization(axis=-1)(layer)
+    print("5: ", end='')
+    print(layer.shape)
+
+    layer = Conv2D(8, (3, 3), padding="same")(layer)
+    print("6: ", end='')
+    print(layer.shape)
+    layer = Activation("relu")(layer)
+    layer = BatchNormalization(axis=-1)(layer)
+    print("7: ", end='')
+    print(layer.shape)
+    layer = Conv2D(16, (3, 3), padding="same")(layer)
+    print("8: ", end='')
+    print(layer.shape)
+    layer = Activation("relu")(layer)
+    layer = BatchNormalization(axis=-1)(layer)
+    print("9: ", end='')
+    print(layer.shape)
+    layer = UpSampling2D(size=(2, 2))(layer)
+    print("10: ", end='')
+    print(layer.shape)
+    layer = Conv2D(32, (3, 3), padding="same")(layer)
+    print("11: ", end='')
+    print(layer.shape)
+    layer = Activation("relu")(layer)
+    layer = BatchNormalization(axis=-1)(layer)
+    print("12: ", end='')
+    print(layer.shape)
+    layer = Conv2D(1, (3, 3), padding="same")(layer)
+    print("12: ", end='')
+    print(layer.shape)
+    layer = Activation("sigmoid")(layer)
+    print("13: ", end='')
+    print(layer.shape)
+    autoencoder = Model(inputs=inputs, outputs=layer)
+    return autoencoder
+
+
+def do_part_3_v2():
+    ae = create_model_3_v2()
+    ae.compile(loss="binary_crossentropy", optimizer="adam", metrics=["binary_accuracy"])
+    ae.summary()
+    ae.fit(train_X, train_masks.reshape((3500, 64, 64, 1)), validation_data=(valid_X, valid_masks.reshape((500, 64, 64, 1))), batch_size=BATCH_SIZE, epochs=NUM_EPOCHS)
+
+    predicts = ae.predict(test_X).reshape(500, 64, 64, 1)
+    overlay_masks('test_v2_overlay.png', test_X, predicts)
+
+
+do_part_3_v1()
