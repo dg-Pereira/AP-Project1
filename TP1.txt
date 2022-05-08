@@ -20,7 +20,19 @@ PERGUNTAS/QUESTIONS:
 Q1: Explain the architecture of your best model for the multiclass classification problem, including a description and justification of the output activation and loss functions. Also justify your choice of layers and activation functions for the hidden layers.
 Q1; Explique a arquitectura do seu melhor modelo para o problema de classificação de multi-classe, incluindo uma descrição e justificação das funções de activação à saída da rede e função de custo. Justifique também a sua escolha de camadas e de funções de activação para as camadas escondidas.
 R1:
-
+Our model for the multiclass classification problem is divided into two parts: the convolutional part and the dense part.
+We use convolutional layers because we want the network to capture patterns in the images.
+In the convolutional part we have 6 layers, with a number of filters that increases from 16 in the first layer, to 96 in the last convolutional layer. Each filter has a 3x3 kernel.
+Each convolutional layer has batch normalization applied to its output, and the ReLU activation function.
+The first two layers have 2x2 maxpooling applied to the output of the activation function, before the batch normalization. This is because when the maxpooling was applied to the output of the batch normalization, the values of the categorical accuracy varied a lot, and moving the maxpooling to before the batch normalization fixed the problem.
+We apply maxpooling only to the first 2 layers because we didn't want the size of the image to decrease too much, and two maxpoolings showed the best results in the validation error/accuracy.
+Between the convolutional part and the dense part is a Flatten(), because dense layers accept 1-dimensional tensors tensors.
+In the dense part we have 2 hidden layers, the first with 256 neurons and the other with 128.
+We used the ReLU activation function in every hidden layer. We couldn't use the sigmoid function, of course, because of the vanishing gradients problem. We also tested using the leaky-ReLU function, but it produced similar results, so we decided to stay with simple ReLU.
+The output layer has 10 neurons with a softmax activation function. This problem is a classification problem with 10 classes, so what we want in the output is an array with the probability of the example belonging to each of the 10 classes, which is what the softmax activation function does.
+We could have used 10 sigmoids instead of the softmax, but with the softmax the network doesn't have to learn that there is only one class for each example.
+The loss function is the categorical crossentropy. DESENVOLVER AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\||||||||||||||||||||||||||||||||||||||||
+We chose to use the Adam optimizer with decay, because it achieved the best results. We used inverse time decay for the learning rate, which was the default decay method before the decay parameter was deprecated.
 
 Q2: Discuss and explain how you selected the best model for the multiclass classifcation problem, showing the relevant plots, comparing the different models you tried and evaluating the results you obtained.
 Q2: Discuta e explique como seleccionou o melhor modelo para o problema de classificação multi-classe, mostrando os gráficos relevantes, comparando os diferentes modelos que experimentou e avaliando os resultados obtidos.

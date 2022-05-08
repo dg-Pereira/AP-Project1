@@ -17,7 +17,7 @@ BatchNormalization = tf.keras.layers.BatchNormalization
 Conv2D = tf.keras.layers.Conv2D
 MaxPooling2D = tf.keras.layers.MaxPooling2D
 Activation = tf.keras.layers.Activation
-Flatten = tf.keras.layers.Flatten
+Flatten: object = tf.keras.layers.Flatten
 Dropout = tf.keras.layers.Dropout
 Dense = tf.keras.layers.Dense
 Sequential = tf.keras.models.Sequential
@@ -59,46 +59,48 @@ test_masks = all_data['test_masks'][:, :, :, 0].reshape((500, 64*64))
 # at the start was overfitting, added more convolution layers and it helped
 # the validation error still jumps around a bit, but it's much better than it used to 
 
+
 def create_model_1():
     m = Sequential()
 
     m.add(Conv2D(16, (3, 3), padding='same', input_shape=(64, 64, 3)))
-    m.add(LeakyReLU(alpha=0.05))
-    m.add(BatchNormalization())
+    m.add(Activation('relu'))
     m.add(MaxPooling2D(pool_size=(2, 2)))
+    m.add(BatchNormalization())
 
     m.add(Conv2D(16, (3, 3), padding='same'))
-    m.add(LeakyReLU(alpha=0.05))
-    m.add(BatchNormalization())
+    m.add(Activation('relu'))
     m.add(MaxPooling2D(pool_size=(2, 2)))
-
-    m.add(Conv2D(32, (3, 3), padding='same'))
-    m.add(LeakyReLU(alpha=0.05))
     m.add(BatchNormalization())
 
     m.add(Conv2D(32, (3, 3), padding='same'))
-    m.add(LeakyReLU(alpha=0.05))
+    m.add(Activation('relu'))
+    m.add(BatchNormalization())
+
+    m.add(Conv2D(32, (3, 3), padding='same'))
+    m.add(Activation('relu'))
     m.add(BatchNormalization())
 
     m.add(Conv2D(64, (3, 3), padding='same'))
-    m.add(LeakyReLU(alpha=0.05))
+    m.add(Activation('relu'))
     m.add(BatchNormalization())
 
     m.add(Conv2D(96, (3, 3), padding='same'))
-    m.add(LeakyReLU(alpha=0.05))
+    m.add(Activation('relu'))
     m.add(BatchNormalization())
 
     m.add(Flatten())
+
     m.add(Dense(256))
-    m.add(LeakyReLU(alpha=0.05))
+    m.add(Activation('relu'))
     m.add(BatchNormalization())
 
     m.add(Dense(128))
-    m.add(LeakyReLU(alpha=0.05))
+    m.add(Activation('relu'))
     m.add(BatchNormalization())
 
     m.add(Dense(10))
-    m.add(Activation("softmax"))
+    m.add(Activation("sigmoid"))
     return m
 
 
@@ -117,32 +119,132 @@ def do_part_1():
     model.summary()
     
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def create_model_2():
     m = Sequential()
 
     m.add(Conv2D(16, (3, 3), padding='same', input_shape=(64, 64, 3)))
     m.add(Activation('relu'))
     m.add(BatchNormalization())
+    m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Conv2D(16, (3, 3), padding='same'))
     m.add(Activation('relu'))
     m.add(BatchNormalization())
+    m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Conv2D(32, (3, 3), padding='same'))
     m.add(Activation('relu'))
     m.add(BatchNormalization())
+    m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Conv2D(32, (3, 3), padding='same'))
     m.add(Activation('relu'))
     m.add(BatchNormalization())
+    m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Conv2D(64, (3, 3), padding='same'))
     m.add(Activation('relu'))
     m.add(BatchNormalization())
+    m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Conv2D(96, (3, 3), padding='same'))
     m.add(Activation('relu'))
     m.add(BatchNormalization())
+    m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Flatten())
     m.add(Dense(256))
