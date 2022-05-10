@@ -119,37 +119,30 @@ def do_part_1():
 def create_model_2():
     m = Sequential()
 
-    m.add(Conv2D(16, (3, 3), padding='same', input_shape=(64, 64, 3)))
+    m.add(Conv2D(32, (3, 3), padding='same'))
     m.add(Activation('relu'))
-    m.add(BatchNormalization())
     m.add(MaxPooling2D(pool_size=(2, 2)))
-
-    m.add(Conv2D(16, (3, 3), padding='same'))
-    m.add(Activation('relu'))
     m.add(BatchNormalization())
-    m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Conv2D(32, (3, 3), padding='same'))
     m.add(Activation('relu'))
-    m.add(BatchNormalization())
     m.add(MaxPooling2D(pool_size=(2, 2)))
-
-    m.add(Conv2D(32, (3, 3), padding='same'))
-    m.add(Activation('relu'))
     m.add(BatchNormalization())
-    m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Conv2D(64, (3, 3), padding='same'))
     m.add(Activation('relu'))
     m.add(BatchNormalization())
-    m.add(MaxPooling2D(pool_size=(2, 2)))
 
     m.add(Conv2D(96, (3, 3), padding='same'))
     m.add(Activation('relu'))
     m.add(BatchNormalization())
-    m.add(MaxPooling2D(pool_size=(2, 2)))
+
+    m.add(Conv2D(96, (3, 3), padding='same'))
+    m.add(Activation('relu'))
+    m.add(BatchNormalization())
 
     m.add(Flatten())
+
     m.add(Dense(256))
     m.add(Activation('relu'))
     m.add(BatchNormalization())
@@ -286,4 +279,4 @@ def do_part_3_v2():
     overlay_masks('test_v2_overlay.png', test_X, predicts)
 
 
-do_part_3_v2()
+do_part_2()

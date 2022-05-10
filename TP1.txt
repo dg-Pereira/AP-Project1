@@ -41,7 +41,7 @@ We started from the neural network we built for the classification problem in th
 overfitting.png
 Seeing this, we tried adding more convolutional layers, and with four convolutional layers we got better validation accuracy, sometimes equal to 99% but extremely unstable, as seen in this plot:
 unstable4.png
-After this, we tried adding even more convolutional layers, but this did not improve the results.
+After this, we tried adding even more convolutional layers, but this did not improve the results. We also tried to do regularization, namely dropout, but this also didn't work.
 After a few different tries, we experimented with removing maxpooling, and the results started to stabilize. We ended up settling with the first 2 layers having maxpooling before the batch normalization, which showed the best results, as shown in the following plot:
 final1.png
 
@@ -51,18 +51,22 @@ R3:
 When we started the multilabel problem, we hadn't yet arrived at the final architecture for the multiclass classification problem.
 So, we started with the architecture we had at that time, which was a convolutional part with 6 layers (16-16-32-32-64-96), and a dense part with 2 layers (128-256). All convolutional layers had batch normalization and max-pooling, in this order.
 This architecture gave decent results, achieving 99% validation accuracy after 100 epochs, but being a bit unstable.
-IMAGEM
-Since this architecture was doing very well, we only tried minor tweaks, like removing max-pooling or doing it before the batch normalization, and using less layers.
-After doing this we settled for an architecture with X layers on the convolutional part (64-64), Y layers on the dense part (64-64), and maxpooling batch normalization etc.
+first-multilabel.png
+Since this architecture was doing very well, we only tried minor tweaks, like removing max-pooling or doing it before the batch normalization, and using less layers. As with the multiclass example, using max-pooling only in the first 2 convolutional layers before the batch normalization gave the best results:
+2-max-poolings-before.png
+After a few tweaks we settled for an architecture with 5 layers on the convolutional part (32-32-64-96-96), 2 layers on the dense part (256-128), and max-pooling on the first 2 convolutional layers before the batch normalization, which gave these results:
+final-architecture-multilabel.png
 The activation function of the last layer had to change from the multiclass problem, since it was a softmax. 
 Softmax is 1 for only one neuron and 0 for all others, therefore, it can't be used for multilabel classification problems, where we want multiple output neurons to be active. 
-So, we chose to use sigmoid activations in the last layer. 
+So, we chose to use sigmoid activations in the last layer.
 By using sigmoids, the activations of the output neurons will all be 0 or 1, but without the constraint of only one being able to be 1. This makes it suitable for multilabel classification.
 BINARY CROSSENTROPY WHY AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 Q4: Explain the architecture of your best model for the semantic segmentation problem, including a description and justification of the output activation and loss functions. Also justify your choice of layers and activation functions for the hidden layers.
 Q4: Explique a arquitectura do seu melhor modelo para o problema de segmentação semântica, incluindo uma descrição e justificação das funções de activação à saída da rede e função de custo. Justifique também a sua escolha de camadas e de funções de activação para as camadas escondidas.
 R4:
+Explicar porque é que é um autoencoder AAAAAAAAAAAAAAAAAAAAAAa
+The autoencoder is an encoder + a decoder. The encoder reduces the dimension of the data, giving us a lower-dimension representation of the image, and the decoder progressively increases the dimension of the image, but in the final step, instead of getting a depth of 3 to reconstruct the image, we get a depth of 1 to construct an image mask.
 The architecture of our model first has a convolutional layer with 32 filters, that turns the 64x64x3 input tensor into a 64x64x32 tensor.
 After this, it applies max-pooling to reduce the size of the image to 32x32, resulting in a 32x3x32 tensor.
 Then, two convolution layers with 8 filters are used, which change the shape of the tensor to 32x32x8.
@@ -81,8 +85,7 @@ But after understanding autoencoders, we realized they would be better for tackl
 We started with the autoencoder architecture given in the lecture slides, and removed the dense part as it was causing some issues.
 This initial architecture proved very successful, getting 99,9% accuracy and giving excelent masks:
 IMAGENS DAS MASKS DO MODELO FINAL
-Seing these results we didn't change much, as anything we tried to change either didn't do anything, or made the results worse.
-
+Seing these results we didn't change much, as anything we tried to change either didn't do anything, or made the results worse. Things we tried changing were:
 
 Q6: (Optional) Discuss the impact on training and overfitting for the two classification problems when using available networks pretrained on ImageNet (e.g. EfficientNetB0, MobileNetV2 or others). Explain how you used these networks and discuss the effect they had relative to your models.
 Q6: (Opcional) Discuta o impacto no treino e sobreajustamento nos dois problemas de classificação se usar redes pré-treinadas no dataset ImageNet (e.g. EfficientNetB0, MobileNetV2 or others). Explique como usou estas redes e discuta o efeito que tiveram nos seus modelos.
