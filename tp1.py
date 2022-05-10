@@ -31,7 +31,7 @@ np.set_printoptions(threshold=np.inf)
 
 INIT_LR = 0.001
 NUM_EPOCHS_MULTICLASS = 100
-NUM_EPOCHS_MULTILABEL = 20
+NUM_EPOCHS_MULTILABEL = 100
 NUM_EPOCHS_AUTOENCODER = 20
 BATCH_SIZE = 12
 
@@ -104,6 +104,7 @@ def create_model_1():
 def do_part_1():
     learning_rate_fn = InverseTimeDecay(INIT_LR, 1.0, INIT_LR / NUM_EPOCHS_MULTICLASS)
     opt = tf.keras.optimizers.Adam(learning_rate=learning_rate_fn)
+    
     model = create_model_1()
     model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["categorical_accuracy"])
 
@@ -113,42 +114,6 @@ def do_part_1():
     history = model.fit(train_X, train_classes, validation_data=(valid_X, valid_classes), batch_size=BATCH_SIZE,
                         epochs=NUM_EPOCHS_MULTICLASS, callbacks=[tensorboard_callback])
     model.summary()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def create_model_2():
@@ -204,8 +169,12 @@ def do_part_2():
     model = create_model_2()
     model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["binary_accuracy"])
 
+    log_dir = "logs/fit/" + datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+
+
     history = model.fit(train_X, train_labels, validation_data=(valid_X, valid_labels), batch_size=BATCH_SIZE,
-                        epochs=NUM_EPOCHS_MULTILABEL)
+                        epochs=NUM_EPOCHS_MULTILABEL, callbacks = [tensorboard_callback])
     model.summary()
 
 '''
@@ -317,4 +286,4 @@ def do_part_3_v2():
     overlay_masks('test_v2_overlay.png', test_X, predicts)
 
 
-do_part_1()
+do_part_3_v2()

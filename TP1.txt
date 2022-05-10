@@ -48,16 +48,40 @@ final1.png
 Q3: For the multilabel classification problem, explain how you adpated your previous model, what experiments you did to optimize the architecture and discuss your results. Do not forget to explain your choice of activation and loss functions and why this model differs from the previous one.
 Q3: Para o problema de classificação com múltiplas etiquetas, explique como adaptou o modelo anterior, que experiências fez para optimizar a arquitectura e discuta os resultados. Não se esqueça de explicar a escolha de funções de activação e custo e porque é que este modelo difere do anterior.
 R3:
-
+When we started the multilabel problem, we hadn't yet arrived at the final architecture for the multiclass classification problem.
+So, we started with the architecture we had at that time, which was a convolutional part with 6 layers (16-16-32-32-64-96), and a dense part with 2 layers (128-256). All convolutional layers had batch normalization and max-pooling, in this order.
+This architecture gave decent results, achieving 99% validation accuracy after 100 epochs, but being a bit unstable.
+IMAGEM
+Since this architecture was doing very well, we only tried minor tweaks, like removing max-pooling or doing it before the batch normalization, and using less layers.
+After doing this we settled for an architecture with X layers on the convolutional part (64-64), Y layers on the dense part (64-64), and maxpooling batch normalization etc.
+The activation function of the last layer had to change from the multiclass problem, since it was a softmax. 
+Softmax is 1 for only one neuron and 0 for all others, therefore, it can't be used for multilabel classification problems, where we want multiple output neurons to be active. 
+So, we chose to use sigmoid activations in the last layer. 
+By using sigmoids, the activations of the output neurons will all be 0 or 1, but without the constraint of only one being able to be 1. This makes it suitable for multilabel classification.
+BINARY CROSSENTROPY WHY AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 Q4: Explain the architecture of your best model for the semantic segmentation problem, including a description and justification of the output activation and loss functions. Also justify your choice of layers and activation functions for the hidden layers.
 Q4: Explique a arquitectura do seu melhor modelo para o problema de segmentação semântica, incluindo uma descrição e justificação das funções de activação à saída da rede e função de custo. Justifique também a sua escolha de camadas e de funções de activação para as camadas escondidas.
 R4:
+The architecture of our model first has a convolutional layer with 32 filters, that turns the 64x64x3 input tensor into a 64x64x32 tensor.
+After this, it applies max-pooling to reduce the size of the image to 32x32, resulting in a 32x3x32 tensor.
+Then, two convolution layers with 8 filters are used, which change the shape of the tensor to 32x32x8.
+After this, the decoding starts.
+First, two convolution layers are applied, the first with 16 filters, and the second with 32, resulting in a 64x64x32 tensor.
+Finally, since we want a 64x64x1 image, we use a convolution layer with only 1 filter, which reduces the tensor to 64x64x1.
 
 
 Q5: Discuss and explain how you selected the best model for the semantic segmentation problem, showing the relevant plots, comparing the different models you tried and evaluating the results you obtained. Use the auxiliary functions provided to show the correspondence between your predicted segmentation masks and the masks provided in the test set.
 Q5: Discuta e explique como seleccionou o melhor modelo para o problema de segmentação semântica, mostrando os gráficos relevantes, comparando os diferentes modelos que experimentou e avaliando os resultados obtidos. Use as funções auxiliares fornecidas para mostrar a correspondência entre as máscaras de segmentação previstas e as máscaras no conjunto de teste.
 R5:
+
+When we started to develop this part of the project, since we didn't really understand autoencoders very well, we viewed the problem like a multilabel classification problem, with 64x64 output neurons with sigmoid activation, corresponding to each pixel in the mask. 1 would be white, 0 would be black. This actually worked suprisingly well, achieving a validation accuracy of 95%, and the masks themselves also didn't look bad.
+MOSTRAR IMAGENS DO MULTILABEL
+But after understanding autoencoders, we realized they would be better for tackling this problem.
+We started with the autoencoder architecture given in the lecture slides, and removed the dense part as it was causing some issues.
+This initial architecture proved very successful, getting 99,9% accuracy and giving excelent masks:
+IMAGENS DAS MASKS DO MODELO FINAL
+Seing these results we didn't change much, as anything we tried to change either didn't do anything, or made the results worse.
 
 
 Q6: (Optional) Discuss the impact on training and overfitting for the two classification problems when using available networks pretrained on ImageNet (e.g. EfficientNetB0, MobileNetV2 or others). Explain how you used these networks and discuss the effect they had relative to your models.
