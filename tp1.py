@@ -215,55 +215,36 @@ def do_part_3_v1():
 
 def create_model_3_v2():
     inputs = Input(shape=(64, 64, 3), name='inputs')
-    layer = Conv2D(32, (3, 3), padding="same", input_shape=(64, 64, 3))(inputs)
-    print("1: ", end='')
-    print(layer.shape)
+    layer = Conv2D(4, (3, 3), padding="same", input_shape=(64, 64, 3))(inputs)
     layer = Activation("relu")(layer)
     layer = BatchNormalization(axis=-1)(layer)
-    print("2: ", end='')
-    print(layer.shape)
-    layer = MaxPooling2D(pool_size=(2, 2))(layer)
-    print("3: ", end='')
-    print(layer.shape)
-    layer = Conv2D(8, (3, 3), padding="same")(layer)
-    print("4: ", end='')
-    print(layer.shape)
-    layer = Activation("relu")(layer)
-    layer = BatchNormalization(axis=-1)(layer)
-    print("5: ", end='')
-    print(layer.shape)
 
     layer = Conv2D(8, (3, 3), padding="same")(layer)
-    print("6: ", end='')
-    print(layer.shape)
     layer = Activation("relu")(layer)
     layer = BatchNormalization(axis=-1)(layer)
-    print("7: ", end='')
-    print(layer.shape)
+
+    layer = Conv2D(8, (3, 3), padding="same")(layer)
+    layer = Activation("relu")(layer)
+    layer = BatchNormalization(axis=-1)(layer)
+
     layer = Conv2D(16, (3, 3), padding="same")(layer)
-    print("8: ", end='')
-    print(layer.shape)
     layer = Activation("relu")(layer)
     layer = BatchNormalization(axis=-1)(layer)
-    print("9: ", end='')
-    print(layer.shape)
-    layer = UpSampling2D(size=(2, 2))(layer)
-    print("10: ", end='')
-    print(layer.shape)
+
     layer = Conv2D(32, (3, 3), padding="same")(layer)
-    print("11: ", end='')
-    print(layer.shape)
     layer = Activation("relu")(layer)
     layer = BatchNormalization(axis=-1)(layer)
-    print("12: ", end='')
-    print(layer.shape)
+
+    layer = Conv2D(64, (3, 3), padding="same")(layer)
+    layer = Activation("relu")(layer)
+    layer = BatchNormalization(axis=-1)(layer)
+
     layer = Conv2D(1, (3, 3), padding="same")(layer)
-    print("12: ", end='')
-    print(layer.shape)
+
     layer = Activation("sigmoid")(layer)
-    print("13: ", end='')
-    print(layer.shape)
+
     autoencoder = Model(inputs=inputs, outputs=layer)
+
     return autoencoder
 
 
@@ -271,12 +252,16 @@ def do_part_3_v2():
     ae = create_model_3_v2()
     ae.compile(loss="binary_crossentropy", optimizer="adam", metrics=["binary_accuracy"])
     ae.summary()
+
+    log_dir = "logs/fit/" + datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+
     ae.fit(train_X, train_masks.reshape((3500, 64, 64, 1)),
            validation_data=(valid_X, valid_masks.reshape((500, 64, 64, 1))), batch_size=BATCH_SIZE,
-           epochs=NUM_EPOCHS_AUTOENCODER)
+           epochs=NUM_EPOCHS_AUTOENCODER, callbacks = [tensorboard_callback])
 
     predicts = ae.predict(test_X).reshape(500, 64, 64, 1)
     overlay_masks('test_v2_overlay.png', test_X, predicts)
 
 
-do_part_2()
+do_part_3_v2()

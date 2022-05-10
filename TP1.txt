@@ -39,9 +39,10 @@ Q2: Discuta e explique como seleccionou o melhor modelo para o problema de class
 R2:
 We started from the neural network we built for the classification problem in the tutorial 3. This network had only two convolutional layers, and thus resulted in overfitting, as we can see in the validation accuracy plot.
 overfitting.png
+To try to fix the overfitting we tried to do regularization, namely dropout, but this didn't work.
 Seeing this, we tried adding more convolutional layers, and with four convolutional layers we got better validation accuracy, sometimes equal to 99% but extremely unstable, as seen in this plot:
 unstable4.png
-After this, we tried adding even more convolutional layers, but this did not improve the results. We also tried to do regularization, namely dropout, but this also didn't work.
+After this, we tried adding even more convolutional layers, but this did not improve the results.
 After a few different tries, we experimented with removing maxpooling, and the results started to stabilize. We ended up settling with the first 2 layers having maxpooling before the batch normalization, which showed the best results, as shown in the following plot:
 final1.png
 
@@ -65,9 +66,10 @@ BINARY CROSSENTROPY WHY AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 Q4: Explain the architecture of your best model for the semantic segmentation problem, including a description and justification of the output activation and loss functions. Also justify your choice of layers and activation functions for the hidden layers.
 Q4: Explique a arquitectura do seu melhor modelo para o problema de segmentação semântica, incluindo uma descrição e justificação das funções de activação à saída da rede e função de custo. Justifique também a sua escolha de camadas e de funções de activação para as camadas escondidas.
 R4:
-Explicar porque é que é um autoencoder AAAAAAAAAAAAAAAAAAAAAAa
-The autoencoder is an encoder + a decoder. The encoder reduces the dimension of the data, giving us a lower-dimension representation of the image, and the decoder progressively increases the dimension of the image, but in the final step, instead of getting a depth of 3 to reconstruct the image, we get a depth of 1 to construct an image mask.
-The architecture of our model first has a convolutional layer with 32 filters, that turns the 64x64x3 input tensor into a 64x64x32 tensor.
+For this problem we started with an autoencoder architecture, because AAAAAAAAAAAAAAAAAAAAAAAAA
+The autoencoder is an encoder + a decoder. The encoder reduces the dimension of the data, giving us a lower-dimensional representation of the image, and the decoder progressively increases the dimensions of the image, but in our case, we want it to give a mask of the image, so instead of completely reconstructing the image (a 64x64x3 tensor), we want it to return a 64x64x1 tensor in the final layer.
+Our autoencoder achieved very good results,
+The architecture of our first model first has a convolutional layer with 32 filters, that turns the 64x64x3 input tensor into a 64x64x32 tensor.
 After this, it applies max-pooling to reduce the size of the image to 32x32, resulting in a 32x3x32 tensor.
 Then, two convolution layers with 8 filters are used, which change the shape of the tensor to 32x32x8.
 After this, the decoding starts.
