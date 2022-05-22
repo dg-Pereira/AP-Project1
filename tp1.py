@@ -8,7 +8,7 @@ import tensorflow as tf
 import numpy as np
 from keras import Input
 
-from tp1_utils import load_data, overlay_masks
+from tp1_utils import load_data, overlay_masks, compare_masks
 
 from datetime import datetime
 
@@ -51,7 +51,7 @@ test_labels = all_data['test_labels']
 
 train_masks = all_data['train_masks'][:, :, :, 0].reshape((4000, 64 * 64))
 train_masks, valid_masks = np.split(train_masks, [len(train_masks) - 500])
-test_masks = all_data['test_masks'][:, :, :, 0].reshape((500, 64 * 64))
+test_masks = all_data['test_masks']
 
 
 # data is already normalized
@@ -208,7 +208,9 @@ def do_part_3_v1():
     model.summary()
 
     predicts = model.predict(test_X).reshape(500, 64, 64, 1)
-    overlay_masks('test_overlay.png', test_X, predicts)
+
+    overlay_masks('test_v1_overlay.png', test_X, predicts)
+    compare_masks('test_v1_compare.png', test_masks, predicts)
     
 '''
 
@@ -255,7 +257,10 @@ def do_part_3_v2():
            epochs=NUM_EPOCHS_AUTOENCODER)
 
     predicts = ae.predict(test_X).reshape(500, 64, 64, 1)
+
     overlay_masks('test_v2_overlay.png', test_X, predicts)
+    compare_masks('test_v2_compare.png', test_masks, predicts)
+
 '''
 
 def create_model_3_v3():
@@ -305,7 +310,9 @@ def do_part_3_v3():
            epochs=NUM_EPOCHS_AUTOENCODER, callbacks = [tensorboard_callback])
 
     predicts = ae.predict(test_X).reshape(500, 64, 64, 1)
-    overlay_masks('test_v2_overlay.png', test_X, predicts)
+
+    overlay_masks('test_v3_overlay.png', test_X, predicts)
+    compare_masks('test_v3_compare.png', test_masks, predicts)
 
 
-do_part_3_v3()
+do_part_1()
